@@ -1,7 +1,7 @@
 package com.wallace.Person.controller
 
 import com.wallace.Person.data.vo.v1.PersonVO
-import com.wallace.Person.model.Person
+import com.wallace.Person.data.vo.v2.PersonVO as PersonVOv2
 import com.wallace.Person.services.PersonService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -38,6 +38,13 @@ class PersonController {
                  consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun create(@RequestBody person: PersonVO): PersonVO {
         return service.create(person)
+    }
+
+    @PostMapping("/v2",
+                produces = [MediaType.APPLICATION_JSON_VALUE],
+                consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun createV2(@RequestBody person: PersonVOv2): PersonVOv2 {
+        return service.createV2(person)
     }
 
     @PutMapping(produces = [MediaType.APPLICATION_JSON_VALUE],

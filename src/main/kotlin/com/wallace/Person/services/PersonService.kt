@@ -1,8 +1,10 @@
 package com.wallace.Person.services
 
 import com.wallace.Person.data.vo.v1.PersonVO
+import com.wallace.Person.data.vo.v2.PersonVO as PersonVOv2
 import com.wallace.Person.exceptions.ResourceNotFoundException
 import com.wallace.Person.mapper.DozerMapper
+import com.wallace.Person.mapper.custom.PersonMapper
 import com.wallace.Person.model.Person
 import com.wallace.Person.repository.PersonRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +17,9 @@ class PersonService {
 
     @Autowired
     private lateinit var personRepository: PersonRepository
+
+    @Autowired
+    private lateinit var mapper: PersonMapper
 
     private val logger = Logger.getLogger(PersonService::class.java.name)
 
@@ -42,6 +47,14 @@ class PersonService {
         var entity: Person = DozerMapper.parseObject(person, Person::class.java)
 
         return DozerMapper.parseObject(personRepository.save(entity), PersonVO::class.java)
+    }
+
+    fun createV2(person: PersonVOv2): PersonVOv2 {
+        logger.info("Trying to create Person with name: ${person.firstName}")
+
+        var entity: Person = mapper.mapVoToENtity(person)
+
+        return mapper.mapEntityToVO(personRepository.save(entity))
     }
 
     fun update(person: PersonVO): PersonVO {
