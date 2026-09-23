@@ -1,5 +1,6 @@
 package com.wallace.Person.controller
 
+import com.wallace.Person.data.vo.v1.PersonVO
 import com.wallace.Person.model.Person
 import com.wallace.Person.services.PersonService
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,25 +24,25 @@ class PersonController {
     private lateinit var service: PersonService
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun findAll(): List<Person> {
+    fun findAll(): List<PersonVO> {
         return service.findAll()
     }
 
     @GetMapping(value = ["/{id}"],
                 produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun findById(@PathVariable id: Long): Person {
+    fun findById(@PathVariable id: Long): PersonVO {
         return service.findById(id)
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE],
                  consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun create(@RequestBody person: Person): Person {
+    fun create(@RequestBody person: PersonVO): PersonVO {
         return service.create(person)
     }
 
     @PutMapping(produces = [MediaType.APPLICATION_JSON_VALUE],
                 consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun update(@RequestBody person: Person): Person {
+    fun update(@RequestBody person: PersonVO): PersonVO {
         return service.update(person)
     }
 
@@ -51,4 +52,5 @@ class PersonController {
         service.delete(id)
         return ResponseEntity.noContent().build<Any>()
     }
+
 }

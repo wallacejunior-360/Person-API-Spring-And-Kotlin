@@ -16,7 +16,7 @@ data class Person (
     var id: Long = 0,
 
     @Column(name = "first_name", nullable = false, length = 50)
-    var firtName: String = "",
+    var firstName: String = "",
 
     @Column(name = "last_name", length = 50)
     var lastName: String = "",
