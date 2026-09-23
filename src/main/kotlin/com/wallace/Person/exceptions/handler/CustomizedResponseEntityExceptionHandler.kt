@@ -1,5 +1,7 @@
-package com.wallace.Person.exceptions
+package com.wallace.Person.exceptions.handler
 
+import com.wallace.Person.exceptions.ExceptionResponse
+import com.wallace.Person.exceptions.ResourceNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -25,8 +27,8 @@ class CustomizedResponseEntityExceptionHandler {
         return ResponseEntity<ExceptionResponse>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @ExceptionHandler(UnsupportedMathOperationException::class)
-    fun handleBadRequestExceptions(e: Exception, request: WebRequest):
+    @ExceptionHandler(ResourceNotFoundException::class)
+    fun handleResourceNotFoundExceptions(e: Exception, request: WebRequest):
             ResponseEntity<ExceptionResponse>
     {
         val exceptionResponse = ExceptionResponse(
@@ -35,6 +37,6 @@ class CustomizedResponseEntityExceptionHandler {
             request.getDescription(false),
         )
 
-        return ResponseEntity<ExceptionResponse>(exceptionResponse, HttpStatus.BAD_REQUEST)
+        return ResponseEntity<ExceptionResponse>(exceptionResponse, HttpStatus.NOT_FOUND)
     }
 }
