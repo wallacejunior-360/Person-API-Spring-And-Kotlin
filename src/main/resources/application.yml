@@ -8,5 +8,13 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: false
+
+  flyway:
+    # Ativa ou desativa o Flyway
+    enabled: true
+    # Local padrão onde o Flyway buscará os arquivos SQL
+    locations: classpath:db/migration
+    # Se você quiser que o Flyway limpe o banco em ambiente de testes (cuidado em produção!)
+    clean-disabled: true
