@@ -1,6 +1,7 @@
 package com.wallace.Person.exceptions.handler
 
 import com.wallace.Person.exceptions.ExceptionResponse
+import com.wallace.Person.exceptions.RequiredObjectIsNullException
 import com.wallace.Person.exceptions.ResourceNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -38,5 +39,18 @@ class CustomizedResponseEntityExceptionHandler {
         )
 
         return ResponseEntity<ExceptionResponse>(exceptionResponse, HttpStatus.NOT_FOUND)
+    }
+
+    @ExceptionHandler(RequiredObjectIsNullException::class)
+    fun handleBadRequestExceptions(e: Exception, request: WebRequest):
+            ResponseEntity<ExceptionResponse>
+    {
+        val exceptionResponse = ExceptionResponse(
+            Date(),
+            e.message ?: "",
+            request.getDescription(false),
+        )
+
+        return ResponseEntity<ExceptionResponse>(exceptionResponse, HttpStatus.BAD_REQUEST)
     }
 }

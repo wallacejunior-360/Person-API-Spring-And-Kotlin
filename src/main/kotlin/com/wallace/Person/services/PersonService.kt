@@ -1,11 +1,14 @@
 package com.wallace.Person.services
 
+import com.wallace.Person.controller.PersonController
 import com.wallace.Person.data.vo.v1.PersonVO
+import com.wallace.Person.exceptions.RequiredObjectIsNullException
 import com.wallace.Person.exceptions.ResourceNotFoundException
 import com.wallace.Person.mapper.DozerMapper
 import com.wallace.Person.model.Person
 import com.wallace.Person.repository.PersonRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.stereotype.Service
 import java.util.concurrent.atomic.AtomicLong
 import java.util.logging.Logger
@@ -23,7 +26,15 @@ class PersonService {
 
         val people =  personRepository.findAll()
 
-        return DozerMapper.parseListObjects(people, PersonVO::class.java)
+        val peopleVO: List<PersonVO> = DozerMapper.parseListObjects(people, PersonVO::class.java)
+
+        for (personVO: PersonVO in peopleVO) {
+            val withSelfRel = linkTo(PersonController::class.java)
+                .slash(personVO.key).withSelfRel()
+            personVO.add(withSelfRel)
+        }
+
+        return peopleVO
     }
 
     fun findById(id: Long): PersonVO {
@@ -33,10 +44,17 @@ class PersonService {
             .findById(id)
             .orElseThrow { ResourceNotFoundException("Person with id: $id not found") }
 
-        return DozerMapper.parseObject(person, PersonVO::class.java)
+        val personVO: PersonVO =  DozerMapper.parseObject(person, PersonVO::class.java)
+        val withSelfRel = linkTo(PersonController::class.java)
+            .slash(personVO.key).withSelfRel()
+        personVO.add(withSelfRel)
+
+        return personVO
     }
 
-    fun create(person: PersonVO): PersonVO {
+    fun create(person: PersonVO?): PersonVO {
+        if (person == null) throw RequiredObjectIsNullException()
+
         logger.info("Trying to create Person with name: ${person.firstName}")
 
         var entity: Person = DozerMapper.parseObject(person, Person::class.java)
@@ -44,12 +62,14 @@ class PersonService {
         return DozerMapper.parseObject(personRepository.save(entity), PersonVO::class.java)
     }
 
-    fun update(person: PersonVO): PersonVO {
-        logger.info("Trying to update Person with id: ${person.id}")
+    fun update(person: PersonVO?): PersonVO {
+        if (person == null) throw RequiredObjectIsNullException()
+
+        logger.info("Trying to update Person with id: ${person.key}")
 
         val entity = personRepository
-            .findById(person.id)
-            .orElseThrow { ResourceNotFoundException("Person with id: ${person.id} not found") }
+            .findById(person.key)
+            .orElseThrow { ResourceNotFoundException("Person with id: ${person.key} not found") }
 
         entity.firstName = person.firstName
         entity.lastName = person.lastName
